@@ -1,0 +1,12 @@
+[project]
+name = "personal-chat-actor-critic"
+version = "0.1.0"
+description = "Assignment 1: personal chat with an Actor (answer generator) and a Critic (evaluator) - Anthropic Claude"
+requires-python = ">=3.12"
+dependencies = [
+    "openai>=1.0.0",
+    "gradio>=5.0",
+    "pydantic>=2.0",
+    "python-dotenv>=1.0",
+    "ipykernel>=6.29",
+]

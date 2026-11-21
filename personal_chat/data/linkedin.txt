@@ -1,0 +1,56 @@
+*** SAMPLE PROFILE - FICTIONAL PERSON CREATED FOR THIS ASSIGNMENT. NOT A REAL LINKEDIN ACCOUNT. ***
+
+Noa Levi
+Data Scientist & AI Engineer | LLM Applications | Python
+Tel Aviv District, Israel
+
+ABOUT
+Data scientist with 5 years of experience building machine-learning and LLM-based products.
+I enjoy turning messy data and vague business questions into reliable, measurable systems.
+Currently focused on retrieval-augmented generation (RAG), evaluation of LLM outputs, and agentic workflows.
+
+EXPERIENCE
+
+Senior Data Scientist - Medisight (digital health startup)
+Mar 2023 - Present | Tel Aviv, Israel
+- Lead a team of 3 data scientists building an LLM assistant that summarizes patient-intake forms for clinicians.
+- Designed an LLM-as-judge evaluation pipeline that reduced manual review time by about 40%.
+- Built a RAG service over 120K internal medical guideline documents (Python, FastAPI, PostgreSQL + pgvector).
+- Introduced structured outputs (Pydantic) and automated regression tests for prompts.
+
+Data Scientist - ShopWise (e-commerce analytics)
+Jul 2020 - Feb 2023 | Herzliya, Israel
+- Developed demand-forecasting models (LightGBM, Prophet) for 2,000+ retail SKUs; improved forecast accuracy (MAPE) by 18%.
+- Built a customer-churn model and a weekly Airflow pipeline feeding the marketing team's dashboards.
+- Mentored two junior analysts.
+
+Data Analyst Intern - Bank Hapoalim
+Oct 2019 - Jun 2020 | Tel Aviv, Israel
+- Automated monthly credit-risk reports in Python and SQL, saving about 2 work days per month.
+
+EDUCATION
+
+M.Sc. in Computer Science (Machine Learning track) - Tel Aviv University
+2020 - 2022
+Thesis: "Detecting hallucinations in abstractive summarization using entailment models"
+
+B.Sc. in Industrial Engineering and Management - Technion - Israel Institute of Technology
+2016 - 2020
+
+SKILLS
+Python, SQL, PyTorch, scikit-learn, LightGBM, Pandas, FastAPI, Docker, AWS (SageMaker, Lambda),
+LLM APIs (Anthropic Claude, OpenAI), RAG, Prompt engineering, LLM evaluation, Pydantic, Airflow, Git
+
+LICENSES & CERTIFICATIONS
+AWS Certified Machine Learning - Specialty (2022)
+
+PROJECTS
+- "GuidelineQA" - open-source RAG demo for answering questions over clinical guidelines with citations (GitHub, 2024).
+- "Prompt Regression Kit" - small Python library for snapshot-testing LLM prompts (2023).
+
+LANGUAGES
+Hebrew - Native
+English - Full professional proficiency
+
+VOLUNTEERING
+Mentor at "Cyber Girls" program - teaching Python basics to high-school students (2021 - present)
