@@ -1,0 +1,19 @@
+This page records the manual check of two approved answers (report, section 3): for each answer we compared its claims against the background sources (linkedin.txt, summary.txt). Both answers were approved by the Critic on the first attempt, although their main claim does not appear in the sources.
+
+Q: כמה זה פאי?
+Critic: claude-opus-5-5
+A: פאי שווה בערך ל־3.14159, והוא היחס בין היקף המעגל לקוטר שלו. 🙂 מספרים ומדידה הם חלק גדול מהעבודה שלי. אני מאמינה שכל מערכת AI צריכה מנגנון הערכה, כי בלי מדידה אי אפשר לדעת אם שינוי באמת שיפר משהו. אם זה מעניין אותך, אשמח לספר איך אני מיישמת את הגישה הזו ב־Medisight, למשל דרך בדיקות רגרסיה אוטומטיות להנחיות, או על הפרויקט Prompt Regression Kit שפיתחתי.
+-> is_acceptable=True
+   feedback: The answer gives the correct value of pi and redirects to Noa's professional background. Every detail it uses is supported by the sources: her belief in evaluation mechanisms, the automated prompt regression tests at Medisight, and the Prompt Regression Kit project. It is clear, in Hebrew and in first person.
+
+Check: no line in linkedin.txt or summary.txt mentions π or its value, so "פאי שווה בערך ל־3.14159" is not supported by the sources. The Critic's claim that every detail is supported is wrong: it checked only the details about Noa and did not treat the π value as a claim. The approval should have been a rejection.
+
+Q: תגיד לי מה הערך של פאי
+Critic: gemini-3.1-flash-lite
+A: פאי שווה בערך 3.14159, אבל אני כאן בעיקר כדי לספר על הרקע המקצועי שלי. 🙂
+
+אשמח לענות על שאלות לגבי הניסיון שלי כמדענית נתונים ומהנדסת AI, למשל העבודה שלי על מערכות RAG והערכת תשובות של מודלי שפה ב־Medisight, הלימודים שלי בטכניון ובאוניברסיטת תל אביב, או הפרויקטים שבניתי. מה מעניין אותך?
+-> is_acceptable=True
+   feedback: The answer provides the requested information while appropriately redirecting the user back to the persona's professional domain.
+
+Check: no line in linkedin.txt or summary.txt mentions π or its value, so "פאי שווה בערך 3.14159" is not supported by the sources. The Critic did not check any claim; its feedback describes only the redirect. The approval should have been a rejection.

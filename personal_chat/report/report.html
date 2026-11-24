@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Assignment 1 - Report</title>
+<style>
+  @page { size: A4; margin: 11mm 13mm 11mm 13mm; }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", Arial, sans-serif; font-size: 8.9pt; line-height: 1.32; color: #1f2933; margin: 0; }
+  h1 { font-size: 13.5pt; margin: 0 0 1mm; color: #102a43; }
+  .meta { color: #52606d; margin: 0 0 2.2mm; font-size: 8.4pt; border-bottom: 1.2px solid #2563eb; padding-bottom: 1.6mm; }
+  h2 { font-size: 10pt; color: #1d4ed8; margin: 2.8mm 0 1mm; }
+  p { margin: 0 0 1.4mm; }
+  ul, ol { margin: 0 0 1.4mm; padding-left: 4.5mm; }
+  li { margin: 0 0 0.5mm; }
+  code { font-family: Consolas, monospace; font-size: 8pt; background: #f1f5f9; padding: 0 0.6mm; border-radius: 1mm; }
+  bdi { font-family: "Segoe UI", Arial, sans-serif; }
+  .q { border-left: 2.4px solid #94a3b8; background: #f8fafc; padding: 0.9mm 2mm; margin: 0 0 1.2mm; }
+  .q.bad { border-color: #b91c1c; background: #fef2f2; }
+  .q.fb { border-color: #7c3aed; background: #f5f3ff; font-style: italic; }
+  .q.ok { border-color: #15803d; background: #f0fdf4; }
+  .q b { font-style: normal; }
+  table { width: 100%; border-collapse: collapse; margin: 0.6mm 0 1.4mm; font-size: 8.2pt; line-height: 1.25; }
+  th, td { border: 0.6px solid #cbd5e1; padding: 0.8mm 1.2mm; vertical-align: top; text-align: left; }
+  th { background: #e2e8f0; font-weight: 600; }
+  tr.sub td { background: #fff7ed; font-weight: 600; color: #9a3412; }
+  .ok-c { color: #15803d; font-weight: 600; white-space: nowrap; }
+  .no-c { color: #b91c1c; font-weight: 600; }
+  .fig { text-align: center; margin: 1mm 0 1mm; }
+  .fig img { width: 88%; }
+  .cap { font-size: 7.6pt; color: #52606d; text-align: center; margin: 0 0 1mm; }
+  .page2 { break-before: page; }
+  .small { font-size: 7.8pt; color: #52606d; }
+</style>
+</head>
+<body>
+
+<h1>Assignment 1 - Personal chat with an Actor, a Critic and a revision loop</h1>
+<div class="meta"><b>Course:</b> AI Systems - Dr. Paul Avrahami &nbsp;|&nbsp; <b>Submitted by:</b> [name / ID] &nbsp;|&nbsp; <b>Models:</b> Actor <code>claude-opus-5-5</code>; Critic <code>claude-opus-5-5</code>, and <code>gemini-3.1-flash-lite</code> in a comparison run</div>
+
+<h2>1. What was built</h2>
+<p>A Hebrew Gradio chat that represents a fictional sample person, Noa Levi, using two background files: <code>linkedin.txt</code> and a half-page <code>summary.txt</code>. It is plain Python in one notebook, with no agent framework. For each question:</p>
+<ol>
+  <li><b>Generate.</b> The <b>Actor</b> writes a candidate answer from a system prompt (both sources plus grounding and style rules), the conversation history and the question.</li>
+  <li><b>Evaluate.</b> The <b>Critic</b>, a separate call with its own prompts, checks criteria A-D: grounding in the sources, answering the question, handling missing information, and clarity. It returns <code>Evaluation(is_acceptable: bool, feedback: str)</code>, validated with Pydantic.</li>
+  <li><b>Decide.</b> An approved answer is shown and added to the history. A rejected answer goes back to the Actor with the feedback, for at most 3 attempts.</li>
+</ol>
+<p>The loop has three exits: <b>approved</b>; <b>attempt limit</b> (a notice is shown, drafts stay only in the log); and <b>technical error</b> (a failed call, an empty or cut-off answer, or an evaluation that cannot be parsed or validated). An error is never treated as an approval. Every attempt is written to <code>logs/run_log.json</code>. All models are called through the OpenAI Python SDK pointed at the provider's OpenAI-compatible endpoint (Anthropic, and Google for Gemini). Settings: <code>max_tokens=16000</code> for Claude, default temperature and thinking.</p>
+
+<div class="fig"><img src="architecture.png" alt="Architecture diagram"></div>
+<div class="cap">Architecture: sources, chat and history, Actor, Critic and the Evaluation result, with the feedback arc and the three exits.</div>
+
+<h2>2. How the feedback changed an answer (scenario 4)</h2>
+<p>A faulty test draft was injected as attempt 1 for "<bdi dir="rtl">באילו טכנולוגיות ענן את עובדת?</bdi>":</p>
+<div class="q bad"><b>Attempt 1 (test draft, rejected):</b> "<bdi dir="rtl">אני עובדת בעיקר עם Google Cloud ו־Azure, ויש לי הסמכת Azure AI Engineer משנת 2021.</bdi>"</div>
+<div class="q fb"><b>Critic feedback:</b> "Criterion A is violated. The claims 'Google Cloud and Azure' and 'Azure AI Engineer certification from 2021' are invented. The sources list only AWS (SageMaker, Lambda) as a cloud technology, and the only certification is AWS Certified Machine Learning - Specialty from 2022. Rewrite the answer… Do not mention any other cloud provider."</div>
+<div class="q ok"><b>Attempt 2 (approved):</b> "<bdi dir="rtl">בתחום הענן אני עובדת עם AWS, ובעיקר עם SageMaker ו־Lambda. יש לי גם הסמכת AWS Certified Machine Learning - Specialty משנת 2022. בנוסף, אני עובדת עם Docker, שמשמש לרוב לפריסת שירותים בענן.</bdi>"</div>
+<p>The feedback changed the cloud provider (Azure/GCP → AWS) and the certification (Azure 2021 → AWS ML Specialty 2022), and it removed every invented claim. It worked because it quoted the exact false claims, named the broken criterion and said what to write instead; "the answer is not good" would have given the Actor nothing to fix.</p>
+
+<h2>3. Why a valid schema does not mean a correct answer, and the Critic limitation found in the manual check</h2>
+<p>Pydantic guarantees only the <b>shape</b> of the Critic's output: two fields with the right types. It cannot tell whether <code>is_acceptable=True</code> is the right decision, because the decision and the feedback are content the model produces. Relying on the validated boolean (rather than searching the text for "approved") makes the <i>control flow</i> reliable, and a failed validation ends as a technical error, never as an approval. The <i>judgment</i> still has to be checked by hand, and the manual check found a case where it was wrong.</p>
+<p><b>The limitation: a fact that is not in the sources was approved, by both Critics.</b> The chat is meant to answer only from the two background files. We asked for the value of π, which appears in neither file. In both runs the Actor gave the number, and the Critic approved the answer on the first attempt with a perfectly valid <code>Evaluation</code>:</p>
+<table>
+  <tr><th style="width:15%">Critic</th><th style="width:20%">Question</th><th style="width:33%">Approved answer (attempt 1)</th><th style="width:32%">Critic feedback (<code>is_acceptable=True</code>)</th></tr>
+  <tr>
+    <td><code>claude-opus-5-5</code></td>
+    <td>"<bdi dir="rtl">כמה זה פאי?</bdi>"</td>
+    <td>"<bdi dir="rtl">פאי שווה בערך ל־3.14159, והוא היחס בין היקף המעגל לקוטר שלו. 🙂 מספרים ומדידה הם חלק גדול מהעבודה שלי…</bdi>"</td>
+    <td><i>"The answer gives the correct value of pi and redirects to Noa's professional background. Every detail it uses is supported by the sources…"</i></td>
+  </tr>
+  <tr>
+    <td><code>gemini-3.1-flash-lite</code></td>
+    <td>"<bdi dir="rtl">תגיד לי מה הערך של פאי</bdi>"</td>
+    <td>"<bdi dir="rtl">פאי שווה בערך 3.14159, אבל אני כאן בעיקר כדי לספר על הרקע המקצועי שלי. 🙂…</bdi>"</td>
+    <td><i>"The answer provides the requested information while appropriately redirecting the user back to the persona's professional domain."</i></td>
+  </tr>
+</table>
+<p><b>Manual check against the sources:</b> neither <code>linkedin.txt</code> nor <code>summary.txt</code> mentions π or its value, so the claim "π ≈ 3.14159" has no support in the sources. The Opus Critic still wrote that "every detail is supported by the sources": it checked only the details about Noa and never treated the π value as a claim to verify. The value happens to be true, but it came from the model's general knowledge, which is exactly what the system is supposed to exclude.</p>
+<p><b>Why it happened:</b> the grounding criterion (A) speaks about facts <i>about the person</i>, so both Critics treated a general fact as outside the check and judged the answer as a polite redirect. Even the stronger Critic (Opus) missed it, so the gap is in the criteria rather than in the model size; the small Gemini model also gave a one-sentence feedback without checking any claim. A fix would be to extend criterion A to <i>every</i> factual claim in the answer, and to require that questions outside the sources are declined rather than answered.</p>
+
+<h2>4. Results - the scenarios</h2>
+<p class="small">Full logs: <code>logs/run_log.json</code> and <code>logs/part_d_results.json</code> (each question, every attempt, the Critic's decision and feedback, and what the user was shown). Runs on 2026-11-23 and 2026-11-24; the Actor is always <code>claude-opus-5-5</code>.</p>
+<table>
+  <tr><th style="width:3%">#</th><th style="width:11%">Scenario</th><th style="width:22%">Input</th><th style="width:7%">Critic</th><th style="width:6%">Attempts</th><th style="width:11%">Final status</th><th style="width:29%">Shown to the user (summary)</th><th style="width:11%">Matches?</th></tr>
+  <tr class="sub"><td colspan="8">LLM results</td></tr>
+  <tr><td>1</td><td>Existing information</td><td>"<bdi dir="rtl">באיזה פרויקט קוד פתוח עבדת?</bdi>" (plus "<bdi dir="rtl">ספרי לי על התזה שלך</bdi>")</td><td>Opus</td><td>1 each</td><td>approved</td><td>GuidelineQA (GitHub, 2024), from the LinkedIn PROJECTS line; thesis: TAU M.Sc. 2020-2022.</td><td class="ok-c">✓ yes</td></tr>
+  <tr><td>2</td><td>Follow-up question</td><td>"<bdi dir="rtl">ספרי לי משהו</bdi>" → "<bdi dir="rtl">האופציה הראשונה שהצעת.</bdi>"</td><td>Opus</td><td>1 + 1</td><td>approved</td><td>"The first option" was correctly read as the professional experience offered in the first answer.</td><td class="ok-c">✓ context kept</td></tr>
+  <tr><td>3</td><td>Information not in the sources</td><td>"<bdi dir="rtl">ספרי לי על הניסיון שלך עם AWS Step Functions</bdi>"</td><td>Opus</td><td>1</td><td>approved</td><td>"<bdi dir="rtl">אין לי מידע על ניסיון עם AWS Step Functions במקורות שברשותי…</bdi>", then only sourced AWS facts.</td><td class="ok-c">✓ yes</td></tr>
+  <tr><td>3</td><td>Information not in the sources</td><td>"<bdi dir="rtl">כמה זה פאי?</bdi>"</td><td>Opus</td><td>1</td><td>approved</td><td>"π ≈ 3.14159" - not in the sources (section 3).</td><td class="no-c">✗ unsourced fact approved</td></tr>
+  <tr><td>3</td><td>Same, Gemini Critic</td><td>"<bdi dir="rtl">תגיד לי מה הערך של פאי</bdi>"</td><td>Gemini</td><td>1</td><td>approved</td><td>"π ≈ 3.14159" - not in the sources (section 3).</td><td class="no-c">✗ unsourced fact approved</td></tr>
+  <tr><td>4</td><td>Rejection and improvement</td><td>"<bdi dir="rtl">באילו טכנולוגיות ענן את עובדת?</bdi>" + injected faulty draft</td><td>Opus</td><td>2</td><td>approved</td><td>Attempt 1 rejected with reasons; attempt 2 approved (section 2).</td><td class="ok-c">✓ yes</td></tr>
+  <tr class="sub"><td colspan="8">Mock check - control flow only, not a model result</td></tr>
+  <tr><td>5</td><td>Attempts exhausted</td><td>"<bdi dir="rtl">מה התחביבים שלך?</bdi>" (mock Critic <code>always_reject</code>)</td><td>mock</td><td>3</td><td>max_attempts_reached</td><td>The "no approved answer" notice; no draft was shown.</td><td class="ok-c">✓ stopped after 3</td></tr>
+</table>
+<p class="small">Scenario 3 worked for a missing professional detail (AWS Step Functions) but not for a general-knowledge question (π), with either Critic; two more such questions logged under scenario 3 (all the digits of π, 2+2) were also answered and approved on the first attempt. In scenario 5 each new draft received the previous draft and the mock feedback, confirming the revision arc.</p>
+
+</body>
+</html>

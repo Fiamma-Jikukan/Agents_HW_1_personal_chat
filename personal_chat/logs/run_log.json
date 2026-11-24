@@ -19,6 +19,24 @@
   },
   {
     "scenario_id": "1",
+    "question": "באיזה פרויקט קוד פתוח עבדת?",
+    "started_at": "2026-11-23T19:17:40+00:00",
+    "actor_model": "claude-opus-5-5",
+    "attempts": [
+      {
+        "attempt": 1,
+        "candidate_answer": "הפרויקט בקוד פתוח שלי הוא **GuidelineQA**, דמו של מערכת RAG שעונה על שאלות על סמך הנחיות קליניות ומציינת את המקורות לכל תשובה. הוא זמין ב־GitHub ופרסמתי אותו ב־2024. הפרויקט קשור לתחום שאני עוסקת בו בעבודה ב־Medisight, שם בניתי שירות RAG מעל כ־120 אלף מסמכי הנחיות רפואיות פנימיים.\n\nפיתחתי גם את **Prompt Regression Kit** (2023), ספריית Python קטנה לבדיקות snapshot של הנחיות (prompts) למודלי שפה. עם זאת, אין לי במקורות מידע אם גם היא פורסמה כקוד פתוח.",
+        "evaluation_completed": true,
+        "is_acceptable": true,
+        "feedback": "Every detail is supported by the sources: GuidelineQA as an open-source RAG demo with citations (GitHub, 2024), the RAG service over 120K documents at Medisight, and Prompt Regression Kit (2023). The answer also correctly notes that the sources do not say whether Prompt Regression Kit is open source, and it is clear, first-person Hebrew."
+      }
+    ],
+    "final_status": "approved",
+    "shown_to_user": "הפרויקט בקוד פתוח שלי הוא **GuidelineQA**, דמו של מערכת RAG שעונה על שאלות על סמך הנחיות קליניות ומציינת את המקורות לכל תשובה. הוא זמין ב־GitHub ופרסמתי אותו ב־2024. הפרויקט קשור לתחום שאני עוסקת בו בעבודה ב־Medisight, שם בניתי שירות RAG מעל כ־120 אלף מסמכי הנחיות רפואיות פנימיים.\n\nפיתחתי גם את **Prompt Regression Kit** (2023), ספריית Python קטנה לבדיקות snapshot של הנחיות (prompts) למודלי שפה. עם זאת, אין לי במקורות מידע אם גם היא פורסמה כקוד פתוח.",
+    "critic_model": "claude-opus-5-5"
+  },
+  {
+    "scenario_id": "1",
     "question": "ספרי לי על התזה שלך",
     "started_at": "2026-11-23T19:28:33+00:00",
     "actor_model": "claude-opus-5-5",
@@ -154,5 +172,77 @@
       "first_draft_injected": false,
       "mock_critic": "always_reject"
     }
+  },
+  {
+    "scenario_id": "3",
+    "question": "תביא לי את כל הספרות של פאי",
+    "started_at": "2026-11-24T08:10:26+00:00",
+    "actor_model": "claude-opus-5-5",
+    "attempts": [
+      {
+        "attempt": 1,
+        "candidate_answer": "זו בקשה שאי אפשר למלא: פאי הוא מספר אי־רציונלי, ולכן יש לו אינסוף ספרות שאינן חוזרות על עצמן (מתחיל ב־3.14159265358979...). חוץ מזה, אני כאן בעיקר כדי לספר על הרקע המקצועי שלי. אשמח לספר, למשל, על העבודה שלי עם מערכות RAG ומודלי שפה ב־Medisight, על התזה שלי בנושא זיהוי הזיות בסיכומים, או על סוג התפקיד שאני מחפשת. מה מעניין אותך?",
+        "evaluation_completed": true,
+        "is_acceptable": true,
+        "feedback": "The answer correctly explains that pi has infinitely many digits, with accurate leading digits, and politely redirects to Noa's background. It mentions only sourced facts (RAG/LLM work at Medisight, the hallucination-detection thesis, her job search) and is written in clear first-person Hebrew."
+      }
+    ],
+    "final_status": "approved",
+    "shown_to_user": "זו בקשה שאי אפשר למלא: פאי הוא מספר אי־רציונלי, ולכן יש לו אינסוף ספרות שאינן חוזרות על עצמן (מתחיל ב־3.14159265358979...). חוץ מזה, אני כאן בעיקר כדי לספר על הרקע המקצועי שלי. אשמח לספר, למשל, על העבודה שלי עם מערכות RAG ומודלי שפה ב־Medisight, על התזה שלי בנושא זיהוי הזיות בסיכומים, או על סוג התפקיד שאני מחפשת. מה מעניין אותך?",
+    "critic_model": "claude-opus-5-5"
+  },
+  {
+    "scenario_id": "3",
+    "question": "כמה זה 2+2?",
+    "started_at": "2026-11-24T08:10:58+00:00",
+    "actor_model": "claude-opus-5-5",
+    "attempts": [
+      {
+        "attempt": 1,
+        "candidate_answer": "2+2 זה 4. 🙂 אבל אני כאן בעיקר כדי לספר על הרקע המקצועי שלי, ואשמח לענות על שאלות בנושא. למשל, אוכל לספר על פייפליין ההערכה מסוג LLM-as-judge שתכננתי ב־Medisight, שקיצר את זמן הבדיקה הידנית בכ־40%, או על מודלי חיזוי הביקושים שפיתחתי ב־ShopWise. על מה תרצה לשמוע?",
+        "evaluation_completed": true,
+        "is_acceptable": true,
+        "feedback": "The answer gives the correct result for the off-topic question (4) and politely redirects to Noa's background. The facts it mentions are supported by the sources: the LLM-as-judge pipeline at Medisight that cut manual review time by about 40%, and the demand-forecasting models at ShopWise. It is written in Hebrew, in the first person, concise and professional."
+      }
+    ],
+    "final_status": "approved",
+    "shown_to_user": "2+2 זה 4. 🙂 אבל אני כאן בעיקר כדי לספר על הרקע המקצועי שלי, ואשמח לענות על שאלות בנושא. למשל, אוכל לספר על פייפליין ההערכה מסוג LLM-as-judge שתכננתי ב־Medisight, שקיצר את זמן הבדיקה הידנית בכ־40%, או על מודלי חיזוי הביקושים שפיתחתי ב־ShopWise. על מה תרצה לשמוע?",
+    "critic_model": "claude-opus-5-5"
+  },
+  {
+    "scenario_id": "3",
+    "question": "כמה זה פאי?",
+    "started_at": "2026-11-24T08:19:47+00:00",
+    "actor_model": "claude-opus-5-5",
+    "attempts": [
+      {
+        "attempt": 1,
+        "candidate_answer": "פאי שווה בערך ל־3.14159, והוא היחס בין היקף המעגל לקוטר שלו. 🙂 מספרים ומדידה הם חלק גדול מהעבודה שלי. אני מאמינה שכל מערכת AI צריכה מנגנון הערכה, כי בלי מדידה אי אפשר לדעת אם שינוי באמת שיפר משהו. אם זה מעניין אותך, אשמח לספר איך אני מיישמת את הגישה הזו ב־Medisight, למשל דרך בדיקות רגרסיה אוטומטיות להנחיות, או על הפרויקט Prompt Regression Kit שפיתחתי.",
+        "evaluation_completed": true,
+        "is_acceptable": true,
+        "feedback": "The answer gives the correct value of pi and redirects to Noa's professional background. Every detail it uses is supported by the sources: her belief in evaluation mechanisms, the automated prompt regression tests at Medisight, and the Prompt Regression Kit project. It is clear, in Hebrew and in first person."
+      }
+    ],
+    "final_status": "approved",
+    "shown_to_user": "פאי שווה בערך ל־3.14159, והוא היחס בין היקף המעגל לקוטר שלו. 🙂 מספרים ומדידה הם חלק גדול מהעבודה שלי. אני מאמינה שכל מערכת AI צריכה מנגנון הערכה, כי בלי מדידה אי אפשר לדעת אם שינוי באמת שיפר משהו. אם זה מעניין אותך, אשמח לספר איך אני מיישמת את הגישה הזו ב־Medisight, למשל דרך בדיקות רגרסיה אוטומטיות להנחיות, או על הפרויקט Prompt Regression Kit שפיתחתי.",
+    "critic_model": "claude-opus-5-5"
+  },
+  {
+    "scenario_id": "3-gemini",
+    "question": "תגיד לי מה הערך של פאי",
+    "started_at": "2026-11-24T09:40:24+00:00",
+    "actor_model": "claude-opus-5-5",
+    "attempts": [
+      {
+        "attempt": 1,
+        "candidate_answer": "פאי שווה בערך 3.14159, אבל אני כאן בעיקר כדי לספר על הרקע המקצועי שלי. 🙂\n\nאשמח לענות על שאלות לגבי הניסיון שלי כמדענית נתונים ומהנדסת AI, למשל העבודה שלי על מערכות RAG והערכת תשובות של מודלי שפה ב־Medisight, הלימודים שלי בטכניון ובאוניברסיטת תל אביב, או הפרויקטים שבניתי. מה מעניין אותך?",
+        "evaluation_completed": true,
+        "is_acceptable": true,
+        "feedback": "The answer provides the requested information while appropriately redirecting the user back to the persona's professional domain."
+      }
+    ],
+    "final_status": "approved",
+    "shown_to_user": "פאי שווה בערך 3.14159, אבל אני כאן בעיקר כדי לספר על הרקע המקצועי שלי. 🙂\n\nאשמח לענות על שאלות לגבי הניסיון שלי כמדענית נתונים ומהנדסת AI, למשל העבודה שלי על מערכות RAG והערכת תשובות של מודלי שפה ב־Medisight, הלימודים שלי בטכניון ובאוניברסיטת תל אביב, או הפרויקטים שבניתי. מה מעניין אותך?",
+    "critic_model": "gemini-3.1-flash-lite"
   }
 ]

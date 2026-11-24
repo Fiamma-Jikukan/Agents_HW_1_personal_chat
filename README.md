@@ -2,8 +2,16 @@
 
 Assignment 1 - AI Systems (Dr. Paul Avrahami).
 
+**Submitted by:**
+
+| Name                  | ID          |
+| --------------------- | ----------- |
+| Stav Tchizik          | _316062835_ |
+| Aviram Yirmiyahu Levi | _325155224_ |
+
 A Hebrew Gradio chat that represents a person based on a LinkedIn profile and a personal summary.
 For every question:
+
 1. The **Actor** writes a candidate answer.
 2. The **Critic** checks it and returns a Pydantic-validated `Evaluation` (`is_acceptable`, `feedback`).
 3. A rejected answer goes back to the Actor with the feedback, for up to **3 attempts** per question.
@@ -15,8 +23,9 @@ Every attempt is saved in a separate review log.
 ## Requirements
 
 - **Python 3.12** (tested with 3.12.12)
-- [**uv**](https://docs.astral.sh/uv/getting-started/installation/) package manager
+- **[uv](https://docs.astral.sh/uv/getting-started/installation/)** package manager
 - An **Anthropic API key** with credit ([Claude Console → API keys](https://platform.claude.com/settings/keys))
+- A **Google API key** (the free tier is enough), used only by the Gemini comparison Critic ([Google AI Studio → API keys](https://aistudio.google.com/apikey))
 - VS Code or Cursor with the Python and Jupyter extensions, or any Jupyter environment
 
 ## Setup
@@ -41,18 +50,21 @@ This creates `.venv/` with the exact versions from `uv.lock`:
 
 ### 2. Set the environment
 
-Copy `.env.example` to `.env` in the repository root, then add your key:
+Copy `.env.example` to `.env` in the repository root, then add your keys:
 
 ```
 ANTHROPIC_API_KEY=sk-ant-...
+GOOGLE_API_KEY=...
 ```
 
-`.env` is listed in `.gitignore` and is never committed. `.env.example` contains only the variable name.
+`GOOGLE_API_KEY` is needed only for the Gemini comparison Critic at the end of the notebook.
+
+`.env` is listed in `.gitignore` and is never committed. `.env.example` contains only the variable names.
 
 ### 3. Open the notebook
 
 1. Open `personal_chat/personal_chat.ipynb`.
-2. Select the kernel **`.venv` (Python 3.12)**.
+2. Select the kernel `.venv` **(Python 3.12)**.
 3. Run the cells from top to bottom.
 
 The notebook must run with `personal_chat/` as its working folder, because it reads `data/` and writes `logs/` relative to it. VS Code and Cursor do this by default.
@@ -83,22 +95,39 @@ Run the **Part D** cells in order:
 
 - **Clearing the chat:** clear it (🗑) before each new scenario, so that one scenario's history does not leak into the next.
 - **Mock results:** scenario 5 is a **control-flow check with a mock Critic**, not a model result. Its log entry says so under `controlled_test` and `critic_model`.
-- **Results summary:** the final cell prints a table of results against expectations, with each scenario marked LLM or mock Critic. It saves all scenario entries to `personal_chat/logs/part_d_results.json`.
+- **Results summary:** this cell prints a table of results against expectations, with each scenario marked LLM or mock Critic. It saves all scenario entries to `personal_chat/logs/part_d_results.json`. It checks only the final status, so the scenario 3 answers still have to be checked by hand: see `report/report.pdf` (section 4) for the reviewed results.
+
+### Scenario 3 again, with a Gemini Critic
+
+The last section of the notebook re-runs scenario 3 with a different Critic, to compare it with the Claude one:
+
+- the Actor is still `claude-opus-5-5`;
+- the Critic is `gemini-3.1-flash-lite`.
+
+To run it:
+
+1. Run its setup cell. It re-reads `.env` and needs `GOOGLE_API_KEY`.
+2. Close any other running chat (`demo.close()`).
+3. Run the chat cell and ask a question that is not covered by the sources.
+
+The Critic uses the same prompts and the same `Evaluation` schema as the Claude Critic. Each question is logged under scenario `3-gemini`, with `critic_model: gemini-3.1-flash-lite`. The cell after the chat prints these entries.
 
 ## Models and settings
 
-| Setting | Value |
-|---|---|
-| Actor model | `claude-opus-5-5` |
-| Critic model | `claude-opus-5-5` (same model, separate calls and separate prompts) |
-| API access | OpenAI Python SDK (`chat.completions`) with `base_url="https://api.anthropic.com/v1/"` (Anthropic's OpenAI-compatible endpoint) and the Anthropic API key |
-| Critic output | `chat.completions.parse(response_format=Evaluation)`: a strict JSON schema, validated with Pydantic |
-| `max_tokens` | 16000 per call |
-| Max attempts per question | 3, including the first |
-| Temperature, thinking | Model defaults. Claude Opus 5.5 thinks adaptively by default, and the thinking is not returned. `reasoning_effort` is not set, because the compatible endpoint ignores it. |
-| Scenario 5 Critic | `always_reject`, a mock function (no model call) |
+| Setting                              | Value                                                                                                                                                                                                                                                                   |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Actor model                          | `claude-opus-5-5`                                                                                                                                                                                                                                                       |
+| Critic model                         | `claude-opus-5-5` (same model, separate calls and separate prompts)                                                                                                                                                                                                     |
+| Comparison Critic (scenario 3 again) | `gemini-3.1-flash-lite`, the smallest Flash-Lite model that worked with the free key (`gemini-2.5-flash-lite` returned 404)                                                                                                                                             |
+| API access                           | OpenAI Python SDK (`chat.completions`) with each provider's OpenAI-compatible endpoint: Claude: `base_url="https://api.anthropic.com/v1/"` with `ANTHROPIC_API_KEY` Gemini: `base_url="https://generativelanguage.googleapis.com/v1beta/openai/"` with `GOOGLE_API_KEY` |
+| Critic output                        | `chat.completions.parse(response_format=Evaluation)`: a strict JSON schema, validated with Pydantic (both Critics)                                                                                                                                                      |
+| `max_tokens`                         | 16000 per Claude call (Gemini: provider default)                                                                                                                                                                                                                        |
+| Max attempts per question            | 3, including the first                                                                                                                                                                                                                                                  |
+| Temperature, thinking                | Model defaults. Claude Opus 5.5 thinks adaptively by default, and the thinking is not returned. `reasoning_effort` is not set, because the compatible endpoint ignores it.                                                                                              |
+| Scenario 5 Critic                    | `always_reject`, a mock function (no model call)                                                                                                                                                                                                                        |
 
 On any of these technical errors, the question stops with a Hebrew error notice and the reason is logged. It is never treated as an approval:
+
 - a failed API call;
 - an empty or cut-off answer;
 - Critic output that cannot be parsed or validated.
@@ -111,7 +140,7 @@ On any of these technical errors, the question stops with a Hebrew error notice 
 ├── pyproject.toml, uv.lock          # dependencies (uv)
 ├── .env.example                     # variable names only - copy to .env
 ├── personal_chat/
-│   ├── personal_chat.ipynb          # the whole implementation, Parts A-D
+│   ├── personal_chat.ipynb          # the whole implementation: Parts A-D, then scenario 3 with a Gemini Critic
 │   ├── data/
 │   │   ├── linkedin.txt             # professional background (sample profile)
 │   │   └── summary.txt              # personal summary, about half a page (sample profile)
@@ -119,9 +148,12 @@ On any of these technical errors, the question stops with a Hebrew error notice 
 │   │   ├── run_log.json             # review log: every question, attempt, decision and feedback
 │   │   └── part_d_results.json      # the Part D scenario entries
 │   └── report/
+│       ├── report.pdf               # the short report (2 pages), built from report.html
+│       ├── report.html              # source of report.pdf
+│       ├── report.md                # the same report as Markdown
 │       ├── architecture.png         # architecture diagram
 │       ├── draw_architecture.py     # regenerates the diagram
-│       └── hand_checked_asnwers     # manual check of approved answers against the sources
+│       └── hand_checked_answers     # manual check of two approved answers against the sources
 └── references/                      # course material (lectures, labs, assignment instructions)
 ```
 
@@ -134,11 +166,13 @@ uv run --no-project --with matplotlib python report/draw_architecture.py report/
 ### Log format (`run_log.json`)
 
 Each question is one entry with:
+
 - `scenario_id`, `question`, `actor_model`, `critic_model`;
 - `final_status`: `approved` / `max_attempts_reached` / `technical_error`;
 - `shown_to_user`;
 - an `attempts` list.
 
 Each attempt records:
+
 - `attempt`, `candidate_answer`, `evaluation_completed`, `is_acceptable`, `feedback`;
 - on a technical error, `evaluation_completed: false` and `error`, with no content decision recorded.
