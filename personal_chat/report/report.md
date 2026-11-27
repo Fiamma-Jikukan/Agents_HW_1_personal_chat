@@ -1,6 +1,6 @@
 # Assignment 1 - Personal chat with an Actor, a Critic and a revision loop
 
-**Course:** AI Systems - Dr. Paul Avrahami | **Submitted by:** _[name / ID]_ | **Models:** Actor `claude-opus-5-5`; Critic `claude-opus-5-5`, and `gemini-3.1-flash-lite` in a comparison run
+**Course:** AI Systems - Dr. Paul Avrahami | **Submitted by:** Stav Tchizik, Aviram Yirmiyahu Levi | **Models:** Actor `claude-opus-5-5`; Critic `claude-opus-5-5`, and `gemini-3.1-flash-lite` in a comparison run
 
 > The submitted version is `report.pdf`, built from `report.html`. This Markdown file has the same content.
 
